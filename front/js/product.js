@@ -2,9 +2,9 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get("id");
-let imgUrl
-let altTxt
-let namepdt
+let imgUrl;
+let altTxt;
+let namepdt;
 
 // Récupération de l'api du produit via l'id
 fetch("http://localhost:3000/api/products/" + id)
@@ -56,7 +56,7 @@ addCart = () => {
     const resultFind = productsOncart.find(
       (el) => el.id === id && el.colors === colors.value
     );
-    //Si le produit commandé est déjà dans le panier
+    // Produit déja dans le panier
     if (resultFind) {
       let newQuantite =
         parseInt(productLocalstorage.quantity) + parseInt(resultFind.quantity);
@@ -64,14 +64,14 @@ addCart = () => {
       localStorage.setItem(key, JSON.stringify(productsOncart));
       console.table(productsOncart);
       window.location.href = "cart.html";
-      //Si le produit commandé n'est pas dans le panier
+      // Produit non présent dans le panier =>
     } else {
       productsOncart.push(productLocalstorage);
       localStorage.setItem(key, JSON.stringify(productsOncart));
       console.table(productsOncart);
       window.location.href = "cart.html";
     }
-    //Si le panier est vide
+    // Panier vide =>
   } else {
     productsOncart = [];
     productsOncart.push(productLocalstorage);
