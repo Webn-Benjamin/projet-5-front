@@ -3,7 +3,7 @@ let productLocalstorage = JSON.parse(localStorage.getItem("product"));
 // Selection de la section des produits
 const emptyCart = document.querySelector("#cart__items");
 // Affichage des produits
-const displayProducts = () => {
+displayProducts = () => {
   // Si le localstorage est vide
   if (productLocalstorage === null || productLocalstorage === 0) {
     const displayEmptyCart = `<p>Votre panier est vide</p>`;
@@ -19,7 +19,7 @@ const displayProducts = () => {
           document
             .querySelector("#cart__items")
             .insertAdjacentHTML("beforeEnd", displayarticle);
-            document.querySelector("#totalPrice").textContent = displayprice
+          document.querySelector("#totalPrice").textContent = displayprice;
         });
     }
   }
@@ -40,7 +40,7 @@ createTemplate = (product, productLocalstorage) => {
                   <div class="cart__item__content__settings">
                     <div class="cart__item__content__settings__quantity">
                       <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productLocalstorage.quantity}">
+                      <input id="quantity" type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productLocalstorage.quantity}">
                     </div>
                     <div class="cart__item__content__settings__delete">
                       <p class="deleteItem">Supprimer</p>
@@ -72,4 +72,11 @@ totalPrix = (product, productLocalstorage) => {
   // Donner la valeur parseInt à la valeur initiale.
   totalPrice += calcPrice;
   return totalPrice;
+};
+
+changeQty = () => {
+  const qtt = document.getElementsByClassName("itemQuantity");
+  for (let a = 0; a < qtt.length; a++) {
+    console.log(qtt[a]);
+  }
 };
