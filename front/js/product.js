@@ -45,7 +45,7 @@ addCart = () => {
   const productLocalstorage = {
     id: id,
     colors: colors.value,
-    quantity: quantity.value,
+    quantity: Number(quantity.value),
     imageUrl: imgUrl,
     altext: altTxt,
     name: namepdt,
@@ -62,21 +62,18 @@ addCart = () => {
         parseInt(productLocalstorage.quantity) + parseInt(resultFind.quantity);
       resultFind.quantity = newQuantite;
       localStorage.setItem(key, JSON.stringify(productsOncart));
-      console.table(productsOncart);
       window.location.href = "cart.html";
       // Produit non présent dans le panier =>
     } else {
       productsOncart.push(productLocalstorage);
       localStorage.setItem(key, JSON.stringify(productsOncart));
-      console.table(productsOncart);
       window.location.href = "cart.html";
     }
     // Panier vide =>
   } else {
     productsOncart = [];
-    productsOncart.push(productLocalstorage);
     localStorage.setItem(key, JSON.stringify(productsOncart));
-    console.table(productsOncart);
+    productsOncart.push(productLocalstorage);
     window.location.href = "cart.html";
   }
 };
