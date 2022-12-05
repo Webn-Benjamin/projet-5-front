@@ -72,8 +72,12 @@ addCart = () => {
     // Panier vide =>
   } else {
     productsOncart = [];
-    localStorage.setItem(key, JSON.stringify(productsOncart));
     productsOncart.push(productLocalstorage);
+    localStorage.setItem(key, JSON.stringify(productsOncart));
     window.location.href = "cart.html";
   }
 };
+
+
+// passage par copie JS
+// passage par référence JS

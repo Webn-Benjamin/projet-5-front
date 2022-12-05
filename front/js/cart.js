@@ -1,82 +1,73 @@
-//Initialisation du local storage
-let productLocalstorage = JSON.parse(localStorage.getItem("product"));
+function getStorage() {
+  const Localstorage = JSON.parse(localStorage.getItem("product"));
+  return Localstorage;
+}
+getStorage();
 // Selection de la section des produits
-const emptyCart = document.querySelector("#cart__items");
-// Affichage des produits
-displayProducts = () => {
-  // Si le localstorage est vide
-  if (productLocalstorage === null || productLocalstorage === 0) {
-    const displayEmptyCart = `<p>Votre panier est vide</p>`;
-    emptyCart.innerHTML = displayEmptyCart;
+let emptyCart = document.querySelector("#cart__items");
+
+function displayProduct() {
+  if (getStorage() === null) {
+    let createpEmpty = document.createElement("p");
+    createpEmpty.textContent = "Votre panier est vide";
+    emptyCart.appendChild(createpEmpty);
   } else {
-    for (let i = 0; i < productLocalstorage.length; i++) {
-      // Récupération du prix via l'api
-      fetch("http://localhost:3000/api/products/" + productLocalstorage[i].id)
-        .then((response) => response.json())
-        .then((product) => {
-          displayarticle = createTemplate(product, productLocalstorage[i]);
-          displayprice = totalPrix(product, productLocalstorage[i]);
-          document
-            .querySelector("#cart__items")
-            .insertAdjacentHTML("beforeEnd", displayarticle);
-          document.querySelector("#totalPrice").textContent = displayprice;
-        });
-    }
+    displayTemplate = productTemplate();
+    emptyCart.insertAdjacentHTML("beforeend", displayTemplate);
   }
-};
-displayProducts();
-// Template pour afficher les produits
-createTemplate = (product, productLocalstorage) => {
-  return `<article class="cart__item" data-id="" data-color="{product-color}">
+}
+displayProduct();
+
+function productTemplate(price) {
+  let productPrice = price
+  console.log(productPrice)
+  let kanap = getStorage();
+  let display = "";
+  for (let i = 0; i < kanap.length; i++) {
+    display += `
+          <article class="cart__item" data-id="${kanap[i].id}" data-color="${kanap[i].colors}">
                 <div class="cart__item__img">
-                  <img src="${product.imageUrl}" alt="${product.altTxt}">
+                  <img src="${kanap[i].imageUrl}" alt="Photographie d'un canapé">
                 </div>
                 <div class="cart__item__content">
                   <div class="cart__item__content__description">
-                    <h2>${product.name}</h2>
-                    <p>${productLocalstorage.colors}</p>
-                    <p>${product.price} €</p>
+                    <h2>${kanap[i].name}</h2>
+                    <p>${kanap[i].colors}</p>
+                    <p>${productPrice}</p>
                   </div>
                   <div class="cart__item__content__settings">
                     <div class="cart__item__content__settings__quantity">
                       <p>Qté : </p>
-                      <input id="quantity" type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productLocalstorage.quantity}">
+                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${kanap[i].quantity}">
                     </div>
                     <div class="cart__item__content__settings__delete">
                       <p class="deleteItem">Supprimer</p>
                     </div>
                   </div>
                 </div>
-              </article>`;
-};
-
-totalQtéProduits = () => {
-  let InitialValue = 0;
-  for (let q in productLocalstorage) {
-    // La fonction parseInt() permet de convertir une chaîne en nombre entier.
-    const qté = parseInt(productLocalstorage[q].quantity);
-
-    // Donner la valeur parseInt à la valeur initiale.
-    InitialValue += qté;
+              </article>
+        `;
   }
-  // Selectionner la quantité puis l'injecter
-  const totalQuantity = document.getElementById("totalQuantity");
-  totalQuantity.textContent = InitialValue;
-};
-totalQtéProduits();
+  return display;
+}
 
-totalPrix = (product, productLocalstorage) => {
-  let totalPrice = 0;
-  const price = product.price * productLocalstorage.quantity;
-  const calcPrice = parseInt(price);
-  // Donner la valeur parseInt à la valeur initiale.
-  totalPrice += calcPrice;
-  return totalPrice;
-};
-
-changeQty = () => {
-  const qtt = document.getElementsByClassName("itemQuantity");
-  for (let a = 0; a < qtt.length; a++) {
-    console.log(qtt[a]);
+function getApiproduct() {
+  const localstorage = getStorage();
+  for (let a = 0; a < localstorage.length; a++) {
+    fetch("http://localhost:3000/api/products/" + localstorage[a].id)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        const productprice = data.price;
+        displayPrice = productTemplate(productprice);
+        // const createpPrice = document.createElement("p");
+        // createpPrice.textContent = productprice + " €";
+        // console.log(createpPrice);
+        // const selectdivprice = document.querySelector(
+        //   ".cart__item__content__description"
+        // );
+      });
   }
-};
+}
+getApiproduct();
