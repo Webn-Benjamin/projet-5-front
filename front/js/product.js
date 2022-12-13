@@ -11,15 +11,18 @@ fetch("http://localhost:3000/api/products/" + id)
   .then((response) => response.json())
   .then((data) => {
     displayProduct(data);
-    console.log(data);
   });
 
 displayProduct = (data) => {
   const displayImg = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
-  document.querySelector(".item__img").innerHTML = displayImg;
+  document
+    .querySelector(".item__img")
+    .insertAdjacentHTML("beforeEnd", displayImg);
 
   const productName = document.querySelector("#title");
   productName.textContent = data.name;
+  const productPrice = document.querySelector("#price");
+  productPrice.textContent = data.price
   const productDescription = document.querySelector("#description");
   productDescription.textContent = data.description;
   const productColor = document.querySelector("#colors");
@@ -28,7 +31,7 @@ displayProduct = (data) => {
   namepdt = data.name;
   for (i = 0; i < data.colors.length; i++) {
     const OptionsColor = `<option value="${data.colors[i]}">${data.colors[i]}</option>`;
-    productColor.insertAdjacentHTML("beforeend", OptionsColor);
+    productColor.insertAdjacentHTML("beforeEnd", OptionsColor);
   }
 };
 
@@ -61,23 +64,17 @@ addCart = () => {
       let newQuantite =
         parseInt(productLocalstorage.quantity) + parseInt(resultFind.quantity);
       resultFind.quantity = newQuantite;
-      localStorage.setItem(key, JSON.stringify(productsOncart));
-      window.location.href = "cart.html";
       // Produit non présent dans le panier =>
     } else {
       productsOncart.push(productLocalstorage);
-      localStorage.setItem(key, JSON.stringify(productsOncart));
-      window.location.href = "cart.html";
     }
     // Panier vide =>
   } else {
     productsOncart = [];
     productsOncart.push(productLocalstorage);
-    localStorage.setItem(key, JSON.stringify(productsOncart));
-    window.location.href = "cart.html";
   }
+  localStorage.setItem(key, JSON.stringify(productsOncart));
+  window.location.href = "cart.html";
 };
 
-
-// passage par copie JS
-// passage par référence JS
+// ajouter le prix

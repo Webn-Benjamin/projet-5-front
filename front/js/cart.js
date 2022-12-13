@@ -1,33 +1,32 @@
 // récupération du localStorage
 let localstorage = JSON.parse(localStorage.getItem("product"));
-// initialisation des fonctions
-// Récupération des prix des produits de l'Api
-function getProductapi() {
-  for (let p = 0; p < localstorage.length; p++) {
-    fetch("http://localhost:3000/api/products/" + localstorage[p].id)
-      .then((response) => response.json())
-      .then((data) => {
-        displayProduct(data, localstorage[p]);
-        productTemplate(data, localstorage[p]);
-        totalPrix(data, localstorage[p]);
-        modifyQtt(data, localstorage[p]);
-      });
-  }
-}
-getProductapi();
-
 // Selection de la section des produits
 let emptyCart = document.querySelector("#cart__items");
-
-function displayProduct(priceApi, productcart) {
+// Récupération des prix des produits de l'Api
+function getProductapi() {
   if (localstorage === null) {
     let createpEmpty = document.createElement("p");
     createpEmpty.textContent = "Votre panier est vide";
     emptyCart.appendChild(createpEmpty);
   } else {
-    displayTemplate = productTemplate(priceApi, productcart);
-    displayPrice = emptyCart.insertAdjacentHTML("beforeend", displayTemplate);
+    for (let p = 0; p < localstorage.length; p++) {
+      fetch("http://localhost:3000/api/products/" + localstorage[p].id)
+        .then((response) => response.json())
+        .then((data) => {
+          displayProduct(data, localstorage[p]);
+          productTemplate(data, localstorage[p]);
+          totalPrix(data, localstorage[p]);
+          modifyQtt(data, localstorage[p]);
+          delProduct();
+        });
+    }
   }
+}
+getProductapi();
+
+function displayProduct(priceApi, productcart) {
+  displayTemplate = productTemplate(priceApi, productcart);
+  displayPrice = emptyCart.insertAdjacentHTML("beforeend", displayTemplate);
 }
 
 function productTemplate(price, productcart) {
@@ -79,7 +78,7 @@ function totalPrix(product, productLocalstorage) {
   for (let q in localstorage) {
     let price = parseInt(product.price * productLocalstorage.quantity);
     initialPrice += price;
-  };
+  }
   const totalPrice = document.getElementById("totalPrice");
   totalPrice.textContent = initialPrice;
 }
@@ -108,3 +107,129 @@ function modifyQtt(price, productcart) {
     });
   }
 }
+
+function delProduct() {
+  let delpdt = document.querySelectorAll(".deleteItem");
+
+  for (let k = 0; k < delpdt.length; k++) {
+    delpdt[k].addEventListener("click", (event) => {
+      event.preventDefault();
+
+      let idDelete = localstorage[k].id;
+      let colorDelete = localstorage[k].colors;
+      console.log(colorDelete)
+
+      localstorage = localstorage.filter(
+        (el) => el.id !== idDelete || el.colors !== colorDelete
+      );
+      localStorage.setItem("product", JSON.stringify(localstorage));
+      alert("produit supprimé")
+      location.reload();
+    });
+  }
+}
+
+//  Récupératio du bouton "passer commande"
+const button = document.querySelector("#order");
+// **********************************************/
+// Ajout de la fonction "click" suivi de la fonction d'envoi
+button.addEventListener("click", (e) => OnSubmit(e));
+// **********************************************/
+
+// Fonction d'envoi du "bouton passer la commande"
+function OnSubmit(e) {
+  e.preventDefault();
+  if (localstorage.length === 0) {
+    alert("Vous n'avez pas de produit dans le panier");
+    return;
+  }
+  if (FormIsInvalid()) return;
+  if (MailisInvalid()) return;
+
+  const body = MakeBody();
+
+  // Creation de la requete POST
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      const orderId = json.orderId;
+      document.location.href = "confirmation.html?orderId=" + orderId;
+    })
+    .catch((err) => console.error(err));
+}
+// **********************************************/
+
+// Test du formulaire de coordonnées si faux s'arrête
+function FormIsInvalid() {
+  const firstname = document.querySelector("#firstName");
+  if (firstname.value === "") {
+    firstname.style.borderBottom = "1px solid red";
+    return true;
+  }
+  const lastname = document.querySelector("#lastName");
+  if (lastname.value === "") {
+    lastname.style.borderBottom = "1px solid red";
+    return true;
+  }
+  const adresse = document.querySelector("#address");
+  if (adresse.value === "") {
+    adresse.style.borderBottom = "1px solid red";
+    return true;
+  }
+  const zipcode = document.querySelector("#city");
+  if (zipcode.value === "") {
+    zipcode.style.borderBottom = "1px solid red";
+    return true;
+  }
+  return false;
+}
+// **********************************************/
+
+// test du mail si faux s'arrête
+function MailisInvalid() {
+  const email = document.querySelector("#email").value;
+  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
+  if (regex.test(email) === false) {
+    document.querySelector("#email").value = placeholder = "Email non valide";
+    return true;
+  }
+  return false;
+}
+// **********************************************/
+
+// Récupération des informations du formulaire + Création du tableau contact et de l'order ID (id produit)
+function MakeBody() {
+  const firstname = document.getElementById("firstName").value;
+  const lastname = document.getElementById("lastName").value;
+  const adress = document.getElementById("address").value;
+  const city = document.getElementById("city").value;
+  const email = document.getElementById("email").value;
+  const body = {
+    contact: {
+      firstName: firstname,
+      lastName: lastname,
+      address: adress,
+      city: city,
+      email: email,
+    },
+    products: GetIdsLocalStorage(),
+  };
+  return body;
+}
+// **********************************************/
+
+// Récupération de l'order id
+function GetIdsLocalStorage() {
+  let idProducts = [];
+  for (let i = 0; i < localstorage.length; i++) {
+    idProducts.push(localstorage[i].id);
+  }
+  return idProducts;
+}
+// **********************************************/
