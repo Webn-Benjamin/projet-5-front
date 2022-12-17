@@ -17,7 +17,7 @@ function getProductapi() {
           productTemplate(data, localstorage[p]);
           totalPrix(data, localstorage[p]);
           modifyQtt(data, localstorage[p]);
-          delProduct();
+          delProduct(data, localstorage[p]);
         });
     }
   }
@@ -33,25 +33,25 @@ function productTemplate(price, productcart) {
   let display = "";
   display += `
     <article class="cart__item" data-id="${productcart.id}" data-color="${productcart.colors}">
-    <div class="cart__item__img">
-    <img src="${productcart.imageUrl}" alt="Photographie d'un canapé">
-    </div>
-    <div class="cart__item__content">
-    <div class="cart__item__content__description">
-    <h2>${productcart.name}</h2>
-    <p>${productcart.colors}</p>
-    <p>${price.price} €</p>
-    </div>
-    <div class="cart__item__content__settings">
-    <div class="cart__item__content__settings__quantity">
-    <p>Qté : </p>
-    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productcart.quantity}">
-    </div>
-    <div class="cart__item__content__settings__delete">
-    <p class="deleteItem">Supprimer</p>
-    </div>
-    </div>
-    </div>
+      <div class="cart__item__img">
+      <img src="${productcart.imageUrl}" alt="Photographie d'un canapé">
+      </div>
+      <div class="cart__item__content">
+      <div class="cart__item__content__description">
+      <h2>${productcart.name}</h2>
+      <p>${productcart.colors}</p>
+      <p>${price.price} €</p>
+      </div>
+      <div class="cart__item__content__settings">
+      <div class="cart__item__content__settings__quantity">
+      <p>Qté : </p>
+      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productcart.quantity}">
+      </div>
+      <div class="cart__item__content__settings__delete">
+      <p class="deleteItem">Supprimer</p>
+      </div>
+      </div>
+      </div>
     </article>
     `;
   return display;
@@ -93,22 +93,25 @@ function modifyQtt(price, productcart) {
       let quantityModif = localstorage[k].quantity;
       let qttModifValue = qttModif[k].valueAsNumber;
 
+      if (qttModifValue <= 0 || qttModifValue > 100) {
+        alert("Veuillez choisir une quantité valide de 1 à 100");
+        location.reload();
+        return;
+      }
       const resultFind = localstorage.find(
         (el) => el.qttModifValue !== quantityModif
       );
       resultFind.quantity = qttModifValue;
       localstorage[k].quantity = resultFind.quantity;
       localStorage.setItem("product", JSON.stringify(localstorage));
-
-      // refresh rapide
+      // actualisation du prix et de la quantité
       totalPrix(price, productcart);
       totalQteProduits();
-      // location.reload();
     });
   }
 }
 
-function delProduct() {
+function delProduct(price, productcart) {
   let delpdt = document.querySelectorAll(".deleteItem");
 
   for (let k = 0; k < delpdt.length; k++) {
@@ -117,14 +120,15 @@ function delProduct() {
 
       let idDelete = localstorage[k].id;
       let colorDelete = localstorage[k].colors;
-      console.log(colorDelete)
 
       localstorage = localstorage.filter(
         (el) => el.id !== idDelete || el.colors !== colorDelete
       );
       localStorage.setItem("product", JSON.stringify(localstorage));
-      alert("produit supprimé")
-      location.reload();
+      delpdt[k].closest("article").remove();
+      totalPrix(price, productcart);
+      totalQteProduits();
+      alert("produit supprimé");
     });
   }
 }
@@ -167,9 +171,15 @@ function OnSubmit(e) {
 
 // Test du formulaire de coordonnées si faux s'arrête
 function FormIsInvalid() {
+  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
+
   const firstname = document.querySelector("#firstName");
   if (firstname.value === "") {
     firstname.style.borderBottom = "1px solid red";
+    return true;
+  }
+  if (regex.test(firstname.value) === false) {
+    alert("merci de saisir seulement des lettres");
     return true;
   }
   const lastname = document.querySelector("#lastName");
@@ -177,19 +187,26 @@ function FormIsInvalid() {
     lastname.style.borderBottom = "1px solid red";
     return true;
   }
+  if (regex.test(lastname.value) === false) {
+    alert("merci de saisir seulement des lettres");
+    return true;
+  }
   const adresse = document.querySelector("#address");
   if (adresse.value === "") {
     adresse.style.borderBottom = "1px solid red";
     return true;
   }
-  const zipcode = document.querySelector("#city");
-  if (zipcode.value === "") {
-    zipcode.style.borderBottom = "1px solid red";
+  const city = document.querySelector("#city");
+  if (city.value === "") {
+    city.style.borderBottom = "1px solid red";
+    return true;
+  }
+  if (regex.test(city.value) === false) {
+    alert("merci de saisir seulement des lettres");
     return true;
   }
   return false;
 }
-// **********************************************/
 
 // test du mail si faux s'arrête
 function MailisInvalid() {

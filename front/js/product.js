@@ -76,5 +76,3 @@ addCart = () => {
   localStorage.setItem(key, JSON.stringify(productsOncart));
   window.location.href = "cart.html";
 };
-
-// ajouter le prix
