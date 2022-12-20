@@ -171,7 +171,7 @@ function OnSubmit(e) {
 
 // Test du formulaire de coordonnées si faux s'arrête
 function FormIsInvalid() {
-  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
+  const regex = /^[a-z,A-Z]+$/i;
 
   const firstname = document.querySelector("#firstName");
   if (firstname.value === "") {

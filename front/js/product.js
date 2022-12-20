@@ -13,7 +13,7 @@ fetch("http://localhost:3000/api/products/" + id)
     displayProduct(data);
   });
 
-displayProduct = (data) => {
+function displayProduct(data) {
   const displayImg = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
   document
     .querySelector(".item__img")
@@ -22,7 +22,7 @@ displayProduct = (data) => {
   const productName = document.querySelector("#title");
   productName.textContent = data.name;
   const productPrice = document.querySelector("#price");
-  productPrice.textContent = data.price
+  productPrice.textContent = data.price;
   const productDescription = document.querySelector("#description");
   productDescription.textContent = data.description;
   const productColor = document.querySelector("#colors");
@@ -33,11 +33,11 @@ displayProduct = (data) => {
     const OptionsColor = `<option value="${data.colors[i]}">${data.colors[i]}</option>`;
     productColor.insertAdjacentHTML("beforeEnd", OptionsColor);
   }
-};
+}
 
 const cartbtn = document.querySelector("#addToCart");
 cartbtn.addEventListener("click", () => addCart());
-addCart = () => {
+function addCart() {
   if (quantity.value <= 0 || quantity.value > 100 || colors.value == "") {
     const errorColor = document.querySelector("#colors");
     const errorQuantity = document.querySelector("#quantity");
@@ -75,4 +75,4 @@ addCart = () => {
   }
   localStorage.setItem(key, JSON.stringify(productsOncart));
   window.location.href = "cart.html";
-};
+}

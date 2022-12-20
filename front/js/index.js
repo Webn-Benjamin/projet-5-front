@@ -4,7 +4,7 @@ fetch("http://localhost:3000/api/products")
     diplayProduct(data);
   });
 
-const diplayProduct = (data) => {
+function diplayProduct(data) {
   let display = "";
   for (i = 0; i < data.length; i++) {
     display += `
@@ -23,4 +23,4 @@ const diplayProduct = (data) => {
         `;
   }
   document.querySelector("#items").insertAdjacentHTML("beforeEnd", display);
-};
+}
